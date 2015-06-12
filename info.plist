@@ -3,16 +3,27 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string></string>
+	<string>com.github.geofffranks.ssh-key-github-lookup</string>
 	<key>category</key>
 	<string>Internet</string>
 	<key>connections</key>
 	<dict>
-		<key>538F44B0-C829-4E15-A6D0-05AA60F7AE2F</key>
+		<key>7327A96A-F3B4-407D-88E7-0BCD33B7E66F</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>FC4B8143-823A-4920-93FA-C0350C2434F8</string>
+				<string>88305F9B-6656-4F9D-82E0-742A6E422826</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>BB8E057C-AD45-4D12-A552-2E79322E03AB</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>7327A96A-F3B4-407D-88E7-0BCD33B7E66F</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -35,36 +46,69 @@
 			<dict>
 				<key>argumenttype</key>
 				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
 				<key>keyword</key>
 				<string>keys</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>2</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string>Searching..</string>
+				<key>script</key>
+				<string>./ssh-keys find-user "{query}"</string>
 				<key>subtext</key>
-				<string>Retrieve public SSH keys for user</string>
-				<key>text</key>
+				<string>Lookup user SSH keys via github</string>
+				<key>title</key>
 				<string>SSH Keys</string>
+				<key>type</key>
+				<integer>0</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
+			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>538F44B0-C829-4E15-A6D0-05AA60F7AE2F</string>
+			<string>BB8E057C-AD45-4D12-A552-2E79322E03AB</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>plusspaces</key>
-				<true/>
-				<key>url</key>
-				<string>http://github.com/{query}.keys</string>
-				<key>utf8</key>
-				<true/>
+				<key>autopaste</key>
+				<false/>
+				<key>clipboardtext</key>
+				<string></string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
+			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
-			<string>FC4B8143-823A-4920-93FA-C0350C2434F8</string>
+			<string>88305F9B-6656-4F9D-82E0-742A6E422826</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./ssh-keys keys-for "{query}"</string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>7327A96A-F3B4-407D-88E7-0BCD33B7E66F</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -73,18 +117,23 @@
 	<string></string>
 	<key>uidata</key>
 	<dict>
-		<key>538F44B0-C829-4E15-A6D0-05AA60F7AE2F</key>
+		<key>7327A96A-F3B4-407D-88E7-0BCD33B7E66F</key>
 		<dict>
 			<key>ypos</key>
-			<real>10</real>
+			<real>150</real>
 		</dict>
-		<key>FC4B8143-823A-4920-93FA-C0350C2434F8</key>
+		<key>88305F9B-6656-4F9D-82E0-742A6E422826</key>
 		<dict>
 			<key>ypos</key>
-			<real>10</real>
+			<real>150</real>
+		</dict>
+		<key>BB8E057C-AD45-4D12-A552-2E79322E03AB</key>
+		<dict>
+			<key>ypos</key>
+			<real>150</real>
 		</dict>
 	</dict>
 	<key>webaddress</key>
-	<string></string>
+	<string>http://github.com/geofffranks/ssh-keys-alfred-workflow</string>
 </dict>
 </plist>
