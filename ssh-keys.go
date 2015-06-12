@@ -11,11 +11,15 @@ import (
 func main() {
 
 	if len(os.Args) > 2 {
+		// Load up creds if present
 		gh := github.NewClient(nil)
 		switch os.Args[1] {
 		case "login":
 			// TODO: save creds for authenticating to google
+		case "logout":
+			// TODO: delete creds
 		case "keys-for":
+			// save username into cache, ++ing usage count
 			var keys []string
 			page := 0
 			for true {
@@ -39,6 +43,7 @@ func main() {
 				panic(err)
 			}
 			for i := 0; i < len(results.Users); i++ {
+				// if user is in cache, use value as priority
 				user := results.Users[i]
 				id := *user.ID
 				login := *user.Login
