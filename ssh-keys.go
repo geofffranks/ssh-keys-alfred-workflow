@@ -4,9 +4,57 @@ import (
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/raguay/goAlfred"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
 	"strings"
 )
+
+func record_hit(user string) error {
+	cache, err := read_cache()
+	if err != nil {
+		return err
+	}
+
+	cache[user]++
+
+	err = write_cache(cache)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func read_cache() (map[string]int, error) {
+	src, err := ioutil.ReadFile(goAlfred.Cache() + "/cache.yml")
+	if err != nil {
+		if os.IsNotExist(err) {
+			return map[string]int{}, nil
+		}
+		return nil, err
+	}
+
+	var cache map[string]int
+	err = yaml.Unmarshal(src, &cache)
+	if err != nil {
+		return nil, err
+	}
+
+	return cache, nil
+}
+
+func write_cache(cache map[string]int) error {
+	src, err := yaml.Marshal(cache)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(goAlfred.Cache()+"/cache.yml", src, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func main() {
 
@@ -19,11 +67,17 @@ func main() {
 		case "logout":
 			// TODO: delete creds
 		case "keys-for":
-			// save username into cache, ++ing usage count
+			user := os.Args[2]
 			var keys []string
+
+			err := record_hit(user)
+			if err != nil {
+				panic(err)
+			}
+
 			page := 0
 			for true {
-				results, response, err := gh.Users.ListKeys(os.Args[2], &github.ListOptions{Page: page, PerPage: 500})
+				results, response, err := gh.Users.ListKeys(user, &github.ListOptions{Page: page, PerPage: 500})
 				if err != nil {
 					panic(err)
 				}
@@ -35,6 +89,7 @@ func main() {
 					break
 				}
 			}
+
 			fmt.Print(strings.Join(keys, "\n") + "\n")
 
 		case "find-user":
@@ -42,8 +97,13 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			cache, err := read_cache()
+			if err != nil {
+				panic(err)
+			}
+
 			for i := 0; i < len(results.Users); i++ {
-				// if user is in cache, use value as priority
 				user := results.Users[i]
 				id := *user.ID
 				login := *user.Login
@@ -53,6 +113,8 @@ func main() {
 				} else {
 					name = *user.Login
 				}
+				priority := cache[login]
+
 				goAlfred.AddResult(
 					fmt.Sprintf("%d", id), // uid
 					login, // arg string
@@ -62,7 +124,7 @@ func main() {
 					"yes",      // valid
 					"",         // auto
 					"",         // rtype
-					0,          // priority
+					priority,
 				)
 			}
 			fmt.Print(goAlfred.ToXML())
