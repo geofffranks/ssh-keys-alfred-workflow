@@ -62,6 +62,7 @@ func main() {
 					"yes",      // valid
 					"",         // auto
 					"",         // rtype
+					0,          // priority
 				)
 			}
 			fmt.Print(goAlfred.ToXML())
