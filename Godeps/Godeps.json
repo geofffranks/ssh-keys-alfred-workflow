@@ -15,8 +15,8 @@
 			"Rev": "b85c7f40c721347895443b3fe7a6626d6eb8d805"
 		},
 		{
-			"ImportPath": "github.com/geofffranks/goAlfred",
-			"Rev": "c1c52f80b5f939216e3c0aa59bad3d352e836598"
+			"ImportPath": "github.com/raguay/goAlfred",
+			"Rev": "c318d0d68d9b58b28c93aabd17b17d88049e53fc"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
