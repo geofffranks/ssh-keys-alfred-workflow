@@ -5,7 +5,7 @@ on [github.com](https://github.com/), allowing you to search
 for the user intuitively, and copies all of that user's SSH keys
 to the clipboard.
 
-To get started, simply [download the workflow](blob/master/SSH-Keys.alfredworkflow), and double-click
+To get started, simply [download the workflow](SSH-Keys.alfredworkflow), and double-click
 to have Alfred install it for you. You should then be able
 to use it like this:
 
