@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -59,6 +60,7 @@ func main() {
 	if len(os.Args) > 2 {
 		// Load up creds if present
 		gh := github.NewClient(nil)
+		ctx := context.Background()
 		switch os.Args[1] {
 		case "login":
 			// TODO: save creds for authenticating to github
@@ -75,7 +77,7 @@ func main() {
 
 			page := 0
 			for {
-				results, response, err := gh.Users.ListKeys(user, &github.ListOptions{Page: page, PerPage: 500})
+				results, response, err := gh.Users.ListKeys(ctx, user, &github.ListOptions{Page: page, PerPage: 500})
 				if err != nil {
 					panic(err)
 				}
@@ -91,7 +93,7 @@ func main() {
 			fmt.Print(strings.Join(keys, "\n") + "\n")
 
 		case "find-user":
-			results, _, err := gh.Search.Users(os.Args[2], &github.SearchOptions{})
+			results, _, err := gh.Search.Users(ctx, os.Args[2], &github.SearchOptions{})
 			if err != nil {
 				panic(err)
 			}
