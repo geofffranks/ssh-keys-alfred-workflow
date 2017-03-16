@@ -2,30 +2,28 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/go-github/github"
-	"github.com/raguay/goAlfred"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/google/go-github/github"
+	"github.com/raguay/goAlfred"
+	"gopkg.in/yaml.v2"
 )
 
-func record_hit(user string) error {
-	cache, err := read_cache()
+func recordHit(user string) error {
+	cache, err := readCache()
 	if err != nil {
 		return err
 	}
 
 	cache[user]++
 
-	err = write_cache(cache)
-	if err != nil {
-		return err
-	}
-	return nil
+	err = writeCache(cache)
+	return err
 }
 
-func read_cache() (map[string]int, error) {
+func readCache() (map[string]int, error) {
 	src, err := ioutil.ReadFile(goAlfred.Cache() + "/cache.yml")
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -43,7 +41,7 @@ func read_cache() (map[string]int, error) {
 	return cache, nil
 }
 
-func write_cache(cache map[string]int) error {
+func writeCache(cache map[string]int) error {
 	src, err := yaml.Marshal(cache)
 	if err != nil {
 		return err
@@ -63,20 +61,20 @@ func main() {
 		gh := github.NewClient(nil)
 		switch os.Args[1] {
 		case "login":
-			// TODO: save creds for authenticating to google
+			// TODO: save creds for authenticating to github
 		case "logout":
 			// TODO: delete creds
 		case "keys-for":
 			user := os.Args[2]
 			var keys []string
 
-			err := record_hit(user)
+			err := recordHit(user)
 			if err != nil {
 				panic(err)
 			}
 
 			page := 0
-			for true {
+			for {
 				results, response, err := gh.Users.ListKeys(user, &github.ListOptions{Page: page, PerPage: 500})
 				if err != nil {
 					panic(err)
@@ -98,7 +96,7 @@ func main() {
 				panic(err)
 			}
 
-			cache, err := read_cache()
+			cache, err := readCache()
 			if err != nil {
 				panic(err)
 			}
