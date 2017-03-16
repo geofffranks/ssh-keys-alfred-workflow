@@ -55,79 +55,89 @@ func writeCache(cache map[string]int) error {
 	return nil
 }
 
+func getKeys(ctx context.Context, user string, gh *github.Client) string {
+	var keys []string
+
+	err := recordHit(user)
+	if err != nil {
+		panic(err)
+	}
+
+	page := 0
+	for {
+		results, response, err := gh.Users.ListKeys(ctx, user, &github.ListOptions{Page: page, PerPage: 500})
+		if err != nil {
+			panic(err)
+		}
+		page = response.NextPage
+		for i := 0; i < len(results); i++ {
+			keys = append(keys, *results[i].Key)
+		}
+		if response.NextPage == response.LastPage {
+			break
+		}
+	}
+
+	return (strings.Join(keys, "\n") + "\n")
+
+}
+
+func findUser(ctx context.Context, user string, gh *github.Client) string {
+	results, _, err := gh.Search.Users(ctx, user, &github.SearchOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	cache, err := readCache()
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < len(results.Users); i++ {
+		user := results.Users[i]
+		id := *user.ID
+		login := *user.Login
+		var name string
+		if user.Name != nil {
+			name = *user.Name
+		} else {
+			name = *user.Login
+		}
+		priority := cache[login]
+
+		goAlfred.AddResult(
+			fmt.Sprintf("%d", id), // uid
+			login, // arg string
+			login, // title
+			"Copy SSH keys for "+name+" to clipboard", // subtitle
+			"icon.png", // icon
+			"yes",      // valid
+			"",         // auto
+			"",         // rtype
+			priority,
+		)
+	}
+	return (goAlfred.ToXML())
+
+}
+
 func main() {
 
 	if len(os.Args) > 2 {
 		// Load up creds if present
 		gh := github.NewClient(nil)
 		ctx := context.Background()
+		user := os.Args[2]
 		switch os.Args[1] {
 		case "login":
 			// TODO: save creds for authenticating to github
 		case "logout":
 			// TODO: delete creds
 		case "keys-for":
-			user := os.Args[2]
-			var keys []string
-
-			err := recordHit(user)
-			if err != nil {
-				panic(err)
-			}
-
-			page := 0
-			for {
-				results, response, err := gh.Users.ListKeys(ctx, user, &github.ListOptions{Page: page, PerPage: 500})
-				if err != nil {
-					panic(err)
-				}
-				page = response.NextPage
-				for i := 0; i < len(results); i++ {
-					keys = append(keys, *results[i].Key)
-				}
-				if response.NextPage == response.LastPage {
-					break
-				}
-			}
-
-			fmt.Print(strings.Join(keys, "\n") + "\n")
-
+			fmt.Print(getKeys(ctx, user, gh))
 		case "find-user":
-			results, _, err := gh.Search.Users(ctx, os.Args[2], &github.SearchOptions{})
-			if err != nil {
-				panic(err)
-			}
-
-			cache, err := readCache()
-			if err != nil {
-				panic(err)
-			}
-
-			for i := 0; i < len(results.Users); i++ {
-				user := results.Users[i]
-				id := *user.ID
-				login := *user.Login
-				var name string
-				if user.Name != nil {
-					name = *user.Name
-				} else {
-					name = *user.Login
-				}
-				priority := cache[login]
-
-				goAlfred.AddResult(
-					fmt.Sprintf("%d", id), // uid
-					login, // arg string
-					login, // title
-					"Copy SSH keys for "+name+" to clipboard", // subtitle
-					"icon.png", // icon
-					"yes",      // valid
-					"",         // auto
-					"",         // rtype
-					priority,
-				)
-			}
-			fmt.Print(goAlfred.ToXML())
+			fmt.Print(findUser(ctx, user, gh))
 		}
 	}
+
 }
