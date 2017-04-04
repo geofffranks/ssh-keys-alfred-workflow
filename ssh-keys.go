@@ -118,7 +118,6 @@ func findUser(ctx context.Context, user string, gh *github.Client) string {
 		)
 	}
 	return (goAlfred.ToXML())
-
 }
 
 func main() {
